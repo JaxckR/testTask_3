@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="col-md-12 col-10 mx-auto">
+    {% if city and text and icon and temp %}
+
+    <h1 class="text-center">Now in {{ city }} is {{ text }}</h1>
+    <img src="{{ icon }}" alt="weather icon" class="d-block mx-auto" style="min-height: 10vh; min-width: 7vw">
+    <h1 class="text-center">{{ temp }}°C</h1>
+
+
+    <h1 class="text-center my-5">Weather for next week</h1>
+    <div class="d-flex justify-content-center">
+        <div class="d-flex">
+            {% for f in forecast %}
+
+            {% for key, value in f.items %}
+            <div class="d-block ms-5">
+                <p class="text-center">{{ key }}</p>
+                <p class="text-center d-md-block d-none">{{ value.text }}</p>
+                <img src="{{ value.icon }}" alt="forecast icon" style="min-width: 5vh; max-width: 10vw" class="d-block mx-auto">
+                <p class="text-center">{{ value.mintemp }}°C - {{ value.maxtemp }}°C</p>
+            </div>
+            {% endfor %}
+
+            {% endfor %}
+        </div>
+    </div>
+
+    {% elif error %}
+    <h1 class="text-center">Oops!<br>{{ error }} :(</h1>
+    {% else %}
+
+    <h1 class="text-center">Enter your city in the search box</h1>
+
+    {% endif %}
+</div>
+{% endblock %}
