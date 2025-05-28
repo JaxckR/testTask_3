@@ -60,7 +60,7 @@ def get_current_weather(city: str) -> dict:
 
     cached_result = cache.get(f"{city}_current")
     if cached_result is not None:
-        RegionHistory.objects.filter(city=cached_result["region"]).update(count=F("count") + 1)
+        RegionHistory.objects.filter(region=cached_result["region"]).update(count=F("count") + 1)
         return cached_result
 
     req = requests.get(f"{BASE_URL}/current.json?q={city}&key={WEATHER_API_KEY}")

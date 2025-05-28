@@ -1,0 +1,50 @@
+[
+{
+  "model": "weather.regionhistory",
+  "pk": 1,
+  "fields": {
+    "region": "Tokyo",
+    "count": 4
+  }
+},
+{
+  "model": "weather.regionhistory",
+  "pk": 2,
+  "fields": {
+    "region": "Moscow City",
+    "count": 5
+  }
+},
+{
+  "model": "weather.regionhistory",
+  "pk": 3,
+  "fields": {
+    "region": "City of London, Greater London",
+    "count": 4
+  }
+},
+{
+  "model": "weather.regionhistory",
+  "pk": 4,
+  "fields": {
+    "region": "Hessen",
+    "count": 7
+  }
+},
+{
+  "model": "weather.regionhistory",
+  "pk": 5,
+  "fields": {
+    "region": "North Holland",
+    "count": 14
+  }
+},
+{
+  "model": "weather.regionhistory",
+  "pk": 6,
+  "fields": {
+    "region": "Ile-de-France",
+    "count": 3
+  }
+}
+]

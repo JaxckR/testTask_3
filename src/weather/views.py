@@ -18,6 +18,9 @@ class IndexPage(TemplateView):
         - temp: float
         - text: str
         - forecast: list[dict] с ключом day: int и значением dict
+
+    В методе get реализовано сохранение последнего просмотренного города в
+    cookie с временем истечения 7 дней
     '''
     template_name = 'weather/index.html'
 
@@ -31,7 +34,8 @@ class IndexPage(TemplateView):
 
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
-        context["last_city"] = unquote(self.request.COOKIES.get("last_city"))
+        if last_city := self.request.COOKIES.get("last_city"):
+            context["last_city"] = unquote(last_city)
 
         if city := self.request.GET.get('city'):
             forecast_city_data = get_current_forecast_weather(city)

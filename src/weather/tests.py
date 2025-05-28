@@ -52,3 +52,31 @@ class WeatherTestCase(TestCase):
         self.assertIn("forecast", result)
         self.assertEqual(result["current"]["city"], "Moscow")
         self.assertEqual(len(result["forecast"]), 7)
+
+
+class WeatherAPITestCase(TestCase):
+    fixtures = ["mock_data.json"]
+
+    def setUp(self):
+        ...
+
+
+    def tearDown(self):
+        ...
+
+
+    def test_region_statistics(self):
+        path = reverse("regions_statistics")
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["count"], 6)
+
+    def test_region_statistics_pagination(self):
+        path = reverse("regions_statistics")
+        response = self.client.get(f"{path}?page_size=5")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["count"], 6)
+        response = self.client.get(response.data["next"])
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["count"], 6)
+        self.assertEqual(len(response.data["results"]), 1)
