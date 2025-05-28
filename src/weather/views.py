@@ -19,20 +19,17 @@ class IndexPage(TemplateView):
     '''
     template_name = 'weather/index.html'
 
-    def __init__(self, *args, **kwargs):
-        self.forecast_city_data = {}
-        super().__init__(*args, **kwargs)
-
-    def get(self, request, *args, **kwargs):
-        if city := request.GET.get('city'):
-            self.forecast_city_data = get_current_forecast_weather(city)
-        return super().get(request, *args, **kwargs)
-
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
-        if self.forecast_city_data:
-            for key, value in self.forecast_city_data["current"].items():
+        if city := self.request.GET.get('city'):
+            forecast_city_data = get_current_forecast_weather(city)
+
+            if error := forecast_city_data.get('error'):
+                context["error"] = error
+                return context
+
+            for key, value in forecast_city_data["current"].items():
                 context[key] = value
 
-            context['forecast'] = [self.forecast_city_data["forecast"]]
+            context['forecast'] = [forecast_city_data["forecast"]]
         return context
