@@ -2,7 +2,9 @@ import requests
 import json
 
 from django.core.cache import cache
+from django.db.models import F
 
+from weather.models import RegionHistory
 from config.settings import WEATHER_API_KEY, BASE_URL
 
 months = {
@@ -38,8 +40,9 @@ def parse_current_weather(data: dict, city: str) -> dict:
     result = {
         "city": location.get("name"),
         "icon": data_condition.get('icon'),
-        "text": data_condition.get('text').lower(),
+        "text": data_condition.get('text'),
         "temp": data.get("temp_c"),
+        "region": location.get("region"),
     }
     return result
 
@@ -57,12 +60,19 @@ def get_current_weather(city: str) -> dict:
 
     cached_result = cache.get(f"{city}_current")
     if cached_result is not None:
+        RegionHistory.objects.filter(city=cached_result["region"]).update(count=F("count") + 1)
         return cached_result
 
     req = requests.get(f"{BASE_URL}/current.json?q={city}&key={WEATHER_API_KEY}")
     req_result = json.loads(req.text)
 
     result = parse_current_weather(req_result, city)
+
+    a = RegionHistory.objects.filter(region=result['region'])
+    if not a:
+        RegionHistory.objects.create(region=result['region'])
+    else:
+        a.update(count=F("count") + 1)
 
     cache.set(f"{city}_current", result, timeout=60 * 60 * 2)
     return result
@@ -78,6 +88,7 @@ def get_current_forecast_weather(city: str) -> dict:
     '''
     cached_result = cache.get(f"{city}_forecast")
     if cached_result is not None:
+        RegionHistory.objects.filter(region=cached_result["current"]["region"]).update(count=F("count") + 1)
         return cached_result
 
     req = requests.get(f"{BASE_URL}/forecast.json?q={city}&days=7&key={WEATHER_API_KEY}")
@@ -104,5 +115,10 @@ def get_current_forecast_weather(city: str) -> dict:
             "maxtemp": day_info['maxtemp_c'],
         }
 
+    a = RegionHistory.objects.filter(region=result['current']['region'])
+    if not a:
+        RegionHistory.objects.create(region=result['current']['region'])
+    else:
+        a.update(count=F("count") + 1)
     cache.set(f"{city}_forecast", result, timeout=60 * 60 * 2)
     return result
