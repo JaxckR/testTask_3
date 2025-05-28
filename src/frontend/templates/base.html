@@ -18,17 +18,23 @@
         <div class="row">
             <h1 class="text-center"><a href="{% url 'home' %}">Weather application</a></h1>
             <form action="" method="get" class="d-flex col-md-6 col-12 mx-auto">
-                <input class="form-control me-2 text-center" type="search" placeholder="Write your city" aria-label="Search" name="city">
+                <input class="form-control me-2 text-center" type="search" placeholder="Write your city"
+                       aria-label="Search" name="city">
             </form>
         </div>
     </div>
 </header>
 
+<div class="container">
+    {% if request.COOKIES.last_city and last_city %}
+    <h4 class="text-center">Last searching: <a href="{% url 'home' %}?city={{ request.COOKIES.last_city }}">{{ last_city }}</a></h4>
+    {% endif %}
+</div>
 
 <main>
     <div class="container">
-            {% block content %}
-            {% endblock %}
+        {% block content %}
+        {% endblock %}
     </div>
 </main>
 

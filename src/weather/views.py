@@ -1,5 +1,7 @@
 from django.views.generic import TemplateView
 
+from urllib.parse import quote, unquote
+
 from weather.api_requests.weather import get_current_forecast_weather
 
 
@@ -19,8 +21,18 @@ class IndexPage(TemplateView):
     '''
     template_name = 'weather/index.html'
 
+    def get(self, request, *args, **kwargs):
+        if not request.GET.get('city'):
+            return super().get(request, *args, **kwargs)
+
+        response = super().get(request, *args, **kwargs)
+        response.set_cookie("last_city", quote(request.GET.get('city')), expires=60 * 60 * 24 * 7)
+        return response
+
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
+        context["last_city"] = unquote(self.request.COOKIES.get("last_city"))
+
         if city := self.request.GET.get('city'):
             forecast_city_data = get_current_forecast_weather(city)
 
